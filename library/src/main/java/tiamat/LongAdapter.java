@@ -16,4 +16,3 @@ final class LongAdapter implements Adapter<Long> {
         editor.putLong(key, value);
     }
 }
-

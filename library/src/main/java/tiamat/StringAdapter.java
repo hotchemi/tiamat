@@ -16,4 +16,3 @@ final class StringAdapter implements Adapter<String> {
         editor.putString(key, value);
     }
 }
-

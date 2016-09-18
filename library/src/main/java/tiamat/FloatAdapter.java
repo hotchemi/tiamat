@@ -3,6 +3,7 @@ package tiamat;
 import android.content.SharedPreferences;
 
 final class FloatAdapter implements Adapter<Float> {
+
     static final FloatAdapter INSTANCE = new FloatAdapter();
 
     @Override
@@ -15,4 +16,3 @@ final class FloatAdapter implements Adapter<Float> {
         editor.putFloat(key, value);
     }
 }
-
