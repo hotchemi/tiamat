@@ -10,14 +10,14 @@ final class Preference<T> {
 
     private final SharedPreferences preferences;
     private final String key;
-    private final T defaultValue;
+    //    private final T defaultValue;
     private final Adapter<T> adapter;
     private final Observable<T> values;
 
     Preference(SharedPreferences preferences, final String key, T defaultValue, Adapter<T> adapter, Observable<String> keyChanges) {
         this.preferences = preferences;
         this.key = key;
-        this.defaultValue = defaultValue;
+//        this.defaultValue = defaultValue;
         this.adapter = adapter;
         this.values = keyChanges
                 .filter(new Func1<String, Boolean>() {
@@ -40,14 +40,14 @@ final class Preference<T> {
         return key;
     }
 
-    public T defaultValue() {
-        return defaultValue;
-    }
+//    public T defaultValue() {
+//        return defaultValue;
+//    }
 
     public T get() {
-        if (!preferences.contains(key)) {
-            return defaultValue;
-        }
+//        if (!preferences.contains(key)) {
+//            return defaultValue;
+//        }
         return adapter.get(key, preferences);
     }
 
@@ -61,16 +61,16 @@ final class Preference<T> {
         editor.apply();
     }
 
-    public boolean isSet() {
-        return preferences.contains(key);
-    }
-
     public void delete() {
         set(null);
     }
 
     public Observable<T> asObservable() {
         return values;
+    }
+
+    public Observable<T> asSingle() {
+        return values.single();
     }
 
     public Action1<? super T> asAction() {
