@@ -5,7 +5,8 @@ import android.content.SharedPreferences;
 /**
  * Stores and retrieves instances of {@code T} in {@link SharedPreferences}.
  */
-public interface Adapter<T> {
+interface Adapter<T> {
+
     /**
      * Retrieve the value for {@code key} from {@code preferences}.
      */
