@@ -2,9 +2,9 @@ package tiamat;
 
 import android.content.SharedPreferences;
 
-final class FloatAdapter implements Adapter<Float> {
+final class FloatProxy implements Proxy<Float> {
 
-    static final FloatAdapter INSTANCE = new FloatAdapter();
+    static final FloatProxy INSTANCE = new FloatProxy();
 
     @Override
     public Float get(String key, Float defValue, SharedPreferences preferences) {

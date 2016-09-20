@@ -2,9 +2,9 @@ package tiamat;
 
 import android.content.SharedPreferences;
 
-final class BooleanAdapter implements Adapter<Boolean> {
+final class BooleanProxy implements Proxy<Boolean> {
 
-    static final BooleanAdapter INSTANCE = new BooleanAdapter();
+    static final BooleanProxy INSTANCE = new BooleanProxy();
 
     @Override
     public Boolean get(String key, Boolean defValue, SharedPreferences preferences) {

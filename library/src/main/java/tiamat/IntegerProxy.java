@@ -2,9 +2,9 @@ package tiamat;
 
 import android.content.SharedPreferences;
 
-final class IntegerAdapter implements Adapter<Integer> {
+final class IntegerProxy implements Proxy<Integer> {
 
-    static final IntegerAdapter INSTANCE = new IntegerAdapter();
+    static final IntegerProxy INSTANCE = new IntegerProxy();
 
     @Override
     public Integer get(String key, Integer defValue, SharedPreferences preferences) {

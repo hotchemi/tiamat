@@ -2,7 +2,7 @@ package tiamat;
 
 import android.content.SharedPreferences;
 
-interface Adapter<T> {
+interface Proxy<T> {
 
     T get(String key, T defValue, SharedPreferences preferences);
 

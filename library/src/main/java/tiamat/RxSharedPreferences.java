@@ -39,51 +39,87 @@ public abstract class RxSharedPreferences {
         }).share();
     }
 
-    public Preference<Boolean> getBoolean(String key) {
+    protected Preference<Boolean> getBoolean(String key) {
         return getBoolean(key, false);
     }
 
-    public Preference<Boolean> getBoolean(String key, Boolean defaultValue) {
-        return new Preference<>(preferences, key, defaultValue, BooleanAdapter.INSTANCE, keyChanges);
+    protected Preference<Boolean> getBoolean(String key, Boolean defaultValue) {
+        return new Preference<>(preferences, key, defaultValue, BooleanProxy.INSTANCE, keyChanges);
     }
 
-    public Preference<Float> getFloat(String key) {
+    protected Preference<Float> getFloat(String key) {
         return getFloat(key, 0f);
     }
 
-    public Preference<Float> getFloat(String key, Float defaultValue) {
-        return new Preference<>(preferences, key, defaultValue, FloatAdapter.INSTANCE, keyChanges);
+    protected Preference<Float> getFloat(String key, Float defaultValue) {
+        return new Preference<>(preferences, key, defaultValue, FloatProxy.INSTANCE, keyChanges);
     }
 
-    public Preference<Integer> getInteger(String key) {
+    protected Preference<Integer> getInteger(String key) {
         return getInteger(key, 0);
     }
 
-    public Preference<Integer> getInteger(String key, Integer defaultValue) {
-        return new Preference<>(preferences, key, defaultValue, IntegerAdapter.INSTANCE, keyChanges);
+    protected Preference<Integer> getInteger(String key, Integer defaultValue) {
+        return new Preference<>(preferences, key, defaultValue, IntegerProxy.INSTANCE, keyChanges);
     }
 
-    public Preference<Long> getLong(String key) {
+    protected Preference<Long> getLong(String key) {
         return getLong(key, 0L);
     }
 
-    public Preference<Long> getLong(String key, Long defaultValue) {
-        return new Preference<>(preferences, key, defaultValue, LongAdapter.INSTANCE, keyChanges);
+    protected Preference<Long> getLong(String key, Long defaultValue) {
+        return new Preference<>(preferences, key, defaultValue, LongProxy.INSTANCE, keyChanges);
     }
 
-    public Preference<String> getString(String key) {
+    protected Preference<String> getString(String key) {
         return getString(key, null);
     }
 
     public Preference<String> getString(String key, String defaultValue) {
-        return new Preference<>(preferences, key, defaultValue, StringAdapter.INSTANCE, keyChanges);
+        return new Preference<>(preferences, key, defaultValue, StringProxy.INSTANCE, keyChanges);
     }
 
-    public Preference<Set<String>> getStringSet(String key) {
+    protected Preference<Set<String>> getStringSet(String key) {
         return getStringSet(key, Collections.<String>emptySet());
     }
 
-    public Preference<Set<String>> getStringSet(String key, Set<String> defaultValue) {
-        return new Preference<>(preferences, key, defaultValue, StringSetAdapter.INSTANCE, keyChanges);
+    protected Preference<Set<String>> getStringSet(String key, Set<String> defaultValue) {
+        return new Preference<>(preferences, key, defaultValue, StringSetProxy.INSTANCE, keyChanges);
+    }
+
+    protected void putBoolean(String key, boolean value) {
+        preferences.edit().putBoolean(key, value).apply();
+    }
+
+    protected void putString(String key, String value) {
+        preferences.edit().putString(key, value).apply();
+    }
+
+    protected void putFloat(String key, float value) {
+        preferences.edit().putFloat(key, value).apply();
+    }
+
+    protected void putInt(String key, int value) {
+        preferences.edit().putInt(key, value).apply();
+    }
+
+    protected void putLong(String key, long value) {
+        preferences.edit().putLong(key, value).apply();
+    }
+
+    protected void putStringSet(String key, Set<String> value) {
+        preferences.edit().putStringSet(key, value).apply();
+    }
+
+    protected boolean contains(String key) {
+        return preferences.contains(key);
+    }
+
+    protected void remove(String key) {
+        preferences.edit().remove(key).apply();
+    }
+
+    public void clear() {
+        preferences.edit().clear().apply();
     }
 }

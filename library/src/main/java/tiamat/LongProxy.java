@@ -2,9 +2,9 @@ package tiamat;
 
 import android.content.SharedPreferences;
 
-final class LongAdapter implements Adapter<Long> {
+final class LongProxy implements Proxy<Long> {
 
-    static final LongAdapter INSTANCE = new LongAdapter();
+    static final LongProxy INSTANCE = new LongProxy();
 
     @Override
     public Long get(String key, Long defValue, SharedPreferences preferences) {

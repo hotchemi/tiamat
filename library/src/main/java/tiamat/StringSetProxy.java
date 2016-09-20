@@ -4,9 +4,9 @@ import android.content.SharedPreferences;
 
 import java.util.Set;
 
-final class StringSetAdapter implements Adapter<Set<String>> {
+final class StringSetProxy implements Proxy<Set<String>> {
 
-    static final StringSetAdapter INSTANCE = new StringSetAdapter();
+    static final StringSetProxy INSTANCE = new StringSetProxy();
 
     @Override
     public Set<String> get(String key, Set<String> defValue, SharedPreferences preferences) {

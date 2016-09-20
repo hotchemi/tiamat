@@ -6,19 +6,19 @@ import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
-final class Preference<T> {
+public class Preference<T> {
 
     private final SharedPreferences preferences;
     private final String key;
     private final T defValue;
-    private final Adapter<T> adapter;
+    private final Proxy<T> proxy;
     private final Observable<T> values;
 
-    Preference(SharedPreferences preferences, final String key, T defValue, Adapter<T> adapter, Observable<String> keyChanges) {
+    Preference(SharedPreferences preferences, final String key, T defValue, Proxy<T> proxy, Observable<String> keyChanges) {
         this.preferences = preferences;
         this.key = key;
         this.defValue = defValue;
-        this.adapter = adapter;
+        this.proxy = proxy;
         this.values = keyChanges
                 .filter(new Func1<String, Boolean>() {
                     @Override
@@ -36,26 +36,14 @@ final class Preference<T> {
                 });
     }
 
-    public String key() {
-        return key;
-    }
-
     public void set(T value) {
         SharedPreferences.Editor editor = preferences.edit();
-        if (value == null) {
-            editor.remove(key);
-        } else {
-            adapter.set(key, value, editor);
-        }
+        proxy.set(key, value, editor);
         editor.apply();
     }
 
-    public void delete() {
-        set(null);
-    }
-
     public T asValue() {
-        return adapter.get(key, defValue, preferences);
+        return proxy.get(key, defValue, preferences);
     }
 
     public Observable<T> asObservable() {
