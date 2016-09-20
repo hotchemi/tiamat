@@ -1,7 +1,6 @@
-package com.rejasupotaro.android.kvs.internal
+package tiamat.compiler
 
 import com.squareup.javapoet.*
-import tiamat.compiler.PrefsModel
 import java.io.IOException
 import java.util.*
 import javax.annotation.processing.Filer
@@ -13,208 +12,175 @@ class PrefsWriter(val model: PrefsModel) {
     fun write(filer: Filer) {
         val classBuilder = TypeSpec.classBuilder(model.className.simpleName())
         classBuilder.addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-        val superClassName = ClassName.get(PrefsSchema::class.java!!)
-        classBuilder.superclass(superClassName)
-
-        val fieldSpecs = createFields()
-        classBuilder.addFields(fieldSpecs)
-
-        val methodSpecs = ArrayList<MethodSpec>()
-        methodSpecs.addAll(createConstructors())
-        methodSpecs.add(createInitializeMethod())
-        methodSpecs.addAll(createMethods())
-        classBuilder.addMethods(methodSpecs)
-
-        val outClass = classBuilder.build()
-        JavaFile.builder(model.className.packageName(), outClass).build().writeTo(filer)
+        classBuilder.superclass(ClassName.get("tiamat", "RxSharedPreferences"))
+        classBuilder.addFields(createFields())
+        classBuilder.addMethods(createMethods())
+        JavaFile.builder(model.className.packageName(), classBuilder.build()).build().writeTo(filer)
     }
 
     private fun createFields(): List<FieldSpec> {
-        val fieldSpecs = ArrayList<FieldSpec>()
-        fieldSpecs.add(FieldSpec.builder(String::class.java, "TABLE_NAME", Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL).initializer("\$S", model.getTableName()).build())
-        fieldSpecs.add(FieldSpec.builder(model.getClassName(), "singleton", Modifier.PRIVATE, Modifier.STATIC).build())
+        val fieldSpecs = ArrayList<FieldSpec>(1)
+        fieldSpecs.add(FieldSpec.builder(String::class.java, "TABLE_NAME", Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL).initializer("\$S", model.tableName).build())
         return fieldSpecs
     }
 
     private fun createConstructors(): List<MethodSpec> {
-        val methodSpecs = ArrayList<MethodSpec>()
-        methodSpecs.add(MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC).addParameter(ClassName.get("android.content", "Context"), "context").addStatement("init(context, TABLE_NAME)").build())
-        methodSpecs.add(MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC).addParameter(ClassName.get("android.content", "SharedPreferences"), "prefs").addStatement("init(prefs)").build())
+        val methodSpecs = ArrayList<MethodSpec>(2)
+        methodSpecs.add(MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(ClassName.get("android.content", "Context"), "context")
+                .addStatement("super(context, TABLE_NAME)")
+                .build())
+        methodSpecs.add(MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(ClassName.get("android.content", "SharedPreferences"), "preferences")
+                .addStatement("super(preferences)")
+                .build())
         return methodSpecs
     }
 
-    private fun createInitializeMethod(): MethodSpec {
-        if ("java.lang.Object" == model.getBuilderClassFqcn()) {
-            return MethodSpec.methodBuilder("get").addModifiers(Modifier.PUBLIC, Modifier.STATIC).returns(model.getClassName()).addParameter(ClassName.get("android.content", "Context"), "context").addStatement("if (singleton != null) return singleton").addStatement("synchronized (\$N.class) { if (singleton == null) singleton = new \$N(context); }",
-                    model.getClassName().simpleName(),
-                    model.getClassName().simpleName()).addStatement("return singleton").build()
-        } else {
-            return MethodSpec.methodBuilder("get").addModifiers(Modifier.PUBLIC, Modifier.STATIC).returns(model.getClassName()).addParameter(ClassName.get("android.content", "Context"), "context").addStatement("if (singleton != null) return singleton").addStatement("synchronized (\$N.class) { if (singleton == null) singleton = new \$N().build(context); }",
-                    model.getClassName().simpleName(),
-                    model.getBuilderClassFqcn()).addStatement("return singleton").build()
-        }
-    }
-
     private fun createMethods(): List<MethodSpec> {
-        val methodSpecs = ArrayList<MethodSpec>()
-        for (field in model.getKeys()) {
-            methodSpecs.addAll(createMethods(field))
+        val methodSpecs = ArrayList<MethodSpec>(model.keys.size)
+        model.keys.forEach {
+            methodSpecs.addAll(createMethods(it))
         }
         return methodSpecs
     }
 
     private fun createMethods(field: Field): List<MethodSpec> {
         val methodSpecs = ArrayList<MethodSpec>()
-        if (TypeName.BOOLEAN == field.getFieldType()) {
-            val argTypeOfSuperMethod = "boolean"
-            val defaultValue = if (field.getValue() == null)
-                "false"
-            else
-                field.getValue().toString()
-            methodSpecs.add(createGetterWithDefaultValue(field, argTypeOfSuperMethod))
-            methodSpecs.add(createGetter(field, argTypeOfSuperMethod, defaultValue))
-            methodSpecs.addAll(createSetter(field, argTypeOfSuperMethod))
-            methodSpecs.add(createHasMethod(field))
-            methodSpecs.add(createRemoveMethod(field))
-        } else if (ClassName.get(String::class.java) == field.getFieldType()) {
-            val argTypeOfSuperMethod = "String"
-            val defaultValue = if (field.getValue() == null)
-                ""
-            else
-                field.getValue().toString()
-            val methodName = "get" + StringUtils.capitalize(field.getName())
-            val superMethodName = "get" + StringUtils.capitalize(argTypeOfSuperMethod)
-            if (field.hasSerializer()) {
-                methodSpecs.add(MethodSpec.methodBuilder(methodName).addModifiers(Modifier.PUBLIC).returns(field.getSerializeType()).addStatement("return new \$T().deserialize(\$N(\$S, \"\"))",
-                        field.getSerializerType(),
-                        superMethodName,
-                        field.getPrefKeyName()).build())
-            } else {
-                methodSpecs.add(MethodSpec.methodBuilder(methodName).addModifiers(Modifier.PUBLIC).returns(field.getFieldType()).addStatement("return \$N(\$S, \$S)", superMethodName, field.getPrefKeyName(), defaultValue).build())
+
+        when (field.fieldType) {
+            TypeName.BOOLEAN -> {
+                val argTypeOfSuperMethod = "boolean"
+                val defaultValue = if (field.value == null) "false" else field.value.toString()
+                methodSpecs.add(createGetterWithDefaultValue(field, argTypeOfSuperMethod))
+                methodSpecs.add(createGetter(field, argTypeOfSuperMethod, defaultValue))
+                methodSpecs.addAll(createSetter(field, argTypeOfSuperMethod))
+                methodSpecs.add(createHasMethod(field))
+                methodSpecs.add(createRemoveMethod(field))
             }
-            methodSpecs.addAll(createSetter(field, argTypeOfSuperMethod))
-            methodSpecs.add(createGetterWithDefaultValue(field, argTypeOfSuperMethod))
-            methodSpecs.add(createHasMethod(field))
-            methodSpecs.add(createRemoveMethod(field))
-        } else if (TypeName.FLOAT == field.getFieldType()) {
-            val argTypeOfSuperMethod = "float"
-            val defaultValue = if (field.getValue() == null)
-                "0.0F"
-            else
-                field.getValue().toString() + "f"
-            methodSpecs.add(createGetterWithDefaultValue(field, argTypeOfSuperMethod))
-            methodSpecs.add(createGetter(field, argTypeOfSuperMethod, defaultValue))
-            methodSpecs.addAll(createSetter(field, argTypeOfSuperMethod))
-            methodSpecs.add(createHasMethod(field))
-            methodSpecs.add(createRemoveMethod(field))
-        } else if (TypeName.INT == field.getFieldType()) {
-            val argTypeOfSuperMethod = "int"
-            val defaultValue = if (field.getValue() == null)
-                "0"
-            else
-                field.getValue().toString()
-            methodSpecs.add(createGetterWithDefaultValue(field, argTypeOfSuperMethod))
-            methodSpecs.add(createGetter(field, argTypeOfSuperMethod, defaultValue))
-            methodSpecs.addAll(createSetter(field, argTypeOfSuperMethod))
-            methodSpecs.add(createHasMethod(field))
-            methodSpecs.add(createRemoveMethod(field))
-        } else if (TypeName.LONG == field.getFieldType()) {
-            val argTypeOfSuperMethod = "long"
-            val defaultValue = if (field.getValue() == null)
-                "0L"
-            else
-                field.getValue().toString() + "L"
-            methodSpecs.add(createGetterWithDefaultValue(field, argTypeOfSuperMethod))
-            methodSpecs.add(createGetter(field, argTypeOfSuperMethod, defaultValue))
-            methodSpecs.addAll(createSetter(field, argTypeOfSuperMethod))
-            methodSpecs.add(createHasMethod(field))
-            methodSpecs.add(createRemoveMethod(field))
-        } else if (ParameterizedTypeName.get(Set<*>::class.java!!, String::class.java) == field.getFieldType()) {
-            val argTypeOfSuperMethod = "StringSet"
-            val methodName = "get" + StringUtils.capitalize(field.getName())
-            val superMethodName = "get" + StringUtils.capitalize(argTypeOfSuperMethod)
-
-            methodSpecs.add(MethodSpec.methodBuilder(methodName).addModifiers(Modifier.PUBLIC).returns(field.getFieldType()).addStatement("return \$N(\$S, new \$T<String>())", superMethodName, field.getPrefKeyName(), ClassName.get(HashSet<*>::class.java!!)).build())
-            methodSpecs.add(createGetterWithDefaultValue(field, argTypeOfSuperMethod))
-            methodSpecs.addAll(createSetter(field, argTypeOfSuperMethod))
-            methodSpecs.add(createHasMethod(field))
-            methodSpecs.add(createRemoveMethod(field))
-        } else {
-            throw IllegalArgumentException(field.getFieldType() + " is not supported")
+            ClassName.get(String::class.java) -> {
+                val argTypeOfSuperMethod = "String"
+                val defaultValue = if (field.value == null) "" else field.value.toString()
+                val methodName = "get${field.name.capitalize()}"
+                val superMethodName = "get${argTypeOfSuperMethod.capitalize()}"
+                methodSpecs.add(MethodSpec.methodBuilder(methodName)
+                        .addModifiers(Modifier.PUBLIC)
+                        .returns(field.fieldType)
+                        .addStatement("return \$N(\$S, \$S)", superMethodName, field.prefKeyName, defaultValue)
+                        .build())
+                methodSpecs.addAll(createSetter(field, argTypeOfSuperMethod))
+                methodSpecs.add(createGetterWithDefaultValue(field, argTypeOfSuperMethod))
+                methodSpecs.add(createHasMethod(field))
+                methodSpecs.add(createRemoveMethod(field))
+            }
+            TypeName.FLOAT -> {
+                val argTypeOfSuperMethod = "float"
+                val defaultValue = if (field.value == null) "0.0F" else field.value.toString() + "f"
+                methodSpecs.add(createGetterWithDefaultValue(field, argTypeOfSuperMethod))
+                methodSpecs.add(createGetter(field, argTypeOfSuperMethod, defaultValue))
+                methodSpecs.addAll(createSetter(field, argTypeOfSuperMethod))
+                methodSpecs.add(createHasMethod(field))
+                methodSpecs.add(createRemoveMethod(field))
+            }
+            TypeName.INT -> {
+                val argTypeOfSuperMethod = "int"
+                val defaultValue = if (field.value == null) "0" else field.value.toString()
+                methodSpecs.add(createGetterWithDefaultValue(field, argTypeOfSuperMethod))
+                methodSpecs.add(createGetter(field, argTypeOfSuperMethod, defaultValue))
+                methodSpecs.addAll(createSetter(field, argTypeOfSuperMethod))
+                methodSpecs.add(createHasMethod(field))
+                methodSpecs.add(createRemoveMethod(field))
+            }
+            TypeName.LONG -> {
+                val argTypeOfSuperMethod = "long"
+                val defaultValue = if (field.value == null) "0L" else field.value.toString() + "L"
+                methodSpecs.add(createGetterWithDefaultValue(field, argTypeOfSuperMethod))
+                methodSpecs.add(createGetter(field, argTypeOfSuperMethod, defaultValue))
+                methodSpecs.addAll(createSetter(field, argTypeOfSuperMethod))
+                methodSpecs.add(createHasMethod(field))
+                methodSpecs.add(createRemoveMethod(field))
+            }
+            ParameterizedTypeName.get(Set::class.java, String::class.java) -> {
+                val argTypeOfSuperMethod = "StringSet"
+                val methodName = "get${field.name.capitalize()}"
+                val superMethodName = "get${argTypeOfSuperMethod.capitalize()}"
+                methodSpecs.add(MethodSpec.methodBuilder(methodName)
+                        .addModifiers(Modifier.PUBLIC)
+                        .returns(field.fieldType)
+                        .addStatement("return \$N(\$S, new \$T<String>())", superMethodName, field.prefKeyName, ClassName.get(HashSet::class.java))
+                        .build())
+                methodSpecs.add(createGetterWithDefaultValue(field, argTypeOfSuperMethod))
+                methodSpecs.addAll(createSetter(field, argTypeOfSuperMethod))
+                methodSpecs.add(createHasMethod(field))
+                methodSpecs.add(createRemoveMethod(field))
+            }
+            else -> {
+                throw IllegalArgumentException("${field.fieldType} is not supported")
+            }
         }
-
         return methodSpecs
     }
 
     private fun createGetterWithDefaultValue(field: Field, argTypeOfSuperMethod: String): MethodSpec {
-        val methodName = "get" + StringUtils.capitalize(field.getName())
-        val superMethodName = "get" + StringUtils.capitalize(argTypeOfSuperMethod)
+        val methodName = "get${field.name.capitalize()}"
+        val superMethodName = "get${argTypeOfSuperMethod.capitalize()}"
         val parameterName = "defValue"
-        if (field.hasSerializer()) {
-            return MethodSpec.methodBuilder(methodName).addModifiers(Modifier.PUBLIC).addParameter(field.getFieldType(), parameterName).returns(field.getSerializeType()).addStatement("return new \$T().deserialize(\$N(\$S, \$L))",
-                    field.getSerializerType(),
-                    superMethodName,
-                    field.getPrefKeyName(),
-                    parameterName).build()
-        } else {
-            return MethodSpec.methodBuilder(methodName).addModifiers(Modifier.PUBLIC).addParameter(field.getFieldType(), parameterName).returns(field.getFieldType()).addStatement("return \$N(\$S, \$N)", superMethodName, field.getPrefKeyName(), parameterName).build()
-        }
+        return MethodSpec.methodBuilder(methodName)
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(field.fieldType, parameterName)
+                .returns(field.fieldType)
+                .addStatement("return \$N(\$S, \$N)", superMethodName, field.prefKeyName, parameterName)
+                .build()
     }
 
     private fun createGetter(field: Field, argTypeOfSuperMethod: String, defaultValue: String): MethodSpec {
-        val methodName = "get" + StringUtils.capitalize(field.getName())
-        val superMethodName = "get" + StringUtils.capitalize(argTypeOfSuperMethod)
-        if (field.hasSerializer()) {
-            return MethodSpec.methodBuilder(methodName).addModifiers(Modifier.PUBLIC).returns(field.getSerializeType()).addStatement("return new \$T().deserialize(\$N(\$S, \$L))",
-                    field.getSerializerType(),
-                    superMethodName,
-                    field.getPrefKeyName(),
-                    defaultValue).build()
-        } else {
-            return MethodSpec.methodBuilder(methodName).addModifiers(Modifier.PUBLIC).returns(field.getFieldType()).addStatement("return \$N(\$S, \$L)", superMethodName, field.getPrefKeyName(), defaultValue).build()
-        }
+        return MethodSpec.methodBuilder("get${field.name.capitalize()}")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(field.fieldType)
+                .addStatement("return \$N(\$S, \$L)", "get${argTypeOfSuperMethod.capitalize()}", field.prefKeyName, defaultValue)
+                .build()
     }
 
     private fun createSetter(field: Field, argTypeOfSuperMethod: String): Collection<MethodSpec> {
         val methodSpecs = ArrayList<MethodSpec>()
         run {
-            val methodName = "set" + StringUtils.capitalize(field.getName())
-            val superMethodName = "put" + StringUtils.capitalize(argTypeOfSuperMethod)
-            if (field.hasSerializer()) {
-                methodSpecs.add(MethodSpec.methodBuilder(methodName).addModifiers(Modifier.PUBLIC).returns(Void.TYPE).addParameter(field.getSerializeType(), field.getName()).addStatement("\$N(\$S, new \$T().serialize(\$N))",
-                        superMethodName,
-                        field.getPrefKeyName(),
-                        field.getSerializerType(),
-                        field.getName()).build())
-            } else {
-                methodSpecs.add(MethodSpec.methodBuilder(methodName).addModifiers(Modifier.PUBLIC).returns(Void.TYPE).addParameter(field.getFieldType(), field.getName()).addStatement("\$N(\$S, \$N)", superMethodName, field.getPrefKeyName(), field.getName()).build())
-            }
+            val methodName = "set${field.name.capitalize()}"
+            val superMethodName = "put${argTypeOfSuperMethod.capitalize()}"
+            methodSpecs.add(MethodSpec.methodBuilder(methodName)
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(Void.TYPE)
+                    .addParameter(field.fieldType, field.name)
+                    .addStatement("\$N(\$S, \$N)", superMethodName, field.prefKeyName, field.name)
+                    .build())
         }
-
         run {
-            val methodName = "put" + StringUtils.capitalize(field.getName())
-            val superMethodName = "put" + StringUtils.capitalize(argTypeOfSuperMethod)
-            if (field.hasSerializer()) {
-                methodSpecs.add(MethodSpec.methodBuilder(methodName).addModifiers(Modifier.PUBLIC).returns(Void.TYPE).addParameter(field.getSerializeType(), field.getName()).addStatement("\$N(\$S, new \$T().serialize(\$N))",
-                        superMethodName,
-                        field.getPrefKeyName(),
-                        field.getSerializerType(),
-                        field.getName()).build())
-            } else {
-                methodSpecs.add(MethodSpec.methodBuilder(methodName).addModifiers(Modifier.PUBLIC).returns(Void.TYPE).addParameter(field.getFieldType(), field.getName()).addStatement("\$N(\$S, \$N)", superMethodName, field.getPrefKeyName(), field.getName()).build())
-            }
+            val methodName = "put${field.name.capitalize()}"
+            val superMethodName = "put${argTypeOfSuperMethod.capitalize()}"
+            methodSpecs.add(MethodSpec.methodBuilder(methodName)
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(Void.TYPE)
+                    .addParameter(field.fieldType, field.name)
+                    .addStatement("\$N(\$S, \$N)", superMethodName, field.prefKeyName, field.name)
+                    .build())
         }
-
         return methodSpecs
     }
 
     private fun createHasMethod(field: Field): MethodSpec {
-        val methodName = "has" + StringUtils.capitalize(field.getName())
-        return MethodSpec.methodBuilder(methodName).addModifiers(Modifier.PUBLIC).returns(Boolean.TYPE).addStatement("return has(\$S)", field.getPrefKeyName()).build()
+        return MethodSpec.methodBuilder("has${field.name.capitalize()}")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(Boolean::class.java)
+                .addStatement("return has(\$S)", field.prefKeyName)
+                .build()
     }
 
     private fun createRemoveMethod(field: Field): MethodSpec {
-        val methodName = "remove" + StringUtils.capitalize(field.getName())
-        return MethodSpec.methodBuilder(methodName).addModifiers(Modifier.PUBLIC).returns(Void.TYPE).addStatement("remove(\$S)", field.getPrefKeyName()).build()
+        return MethodSpec.methodBuilder("remove${field.name.capitalize()}")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(Void::class.java)
+                .addStatement("remove(\$S)", field.prefKeyName)
+                .build()
     }
 }

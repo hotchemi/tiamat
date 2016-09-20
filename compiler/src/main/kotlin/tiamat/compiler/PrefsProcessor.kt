@@ -1,6 +1,5 @@
 package tiamat.compiler
 
-import com.rejasupotaro.android.kvs.internal.PrefsWriter
 import tiamat.Pref
 import java.io.IOException
 import javax.annotation.processing.*
@@ -31,15 +30,15 @@ class PrefsProcessor : AbstractProcessor() {
     override fun getSupportedAnnotationTypes(): Set<String> = hashSetOf(Pref::class.java.canonicalName)
 
     override fun process(annotations: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
-        parseEnv(roundEnv, elementUtils).map {
-            PrefsWriter(it)
-        }.forEach {
-            try {
-                it.write(filer)
-            } catch (e: IOException) {
-                messager.printMessage(Diagnostic.Kind.ERROR, e.message)
-            }
-        }
+        parseEnv(roundEnv, elementUtils)
+                .map { PrefsWriter(it) }
+                .forEach {
+                    try {
+                        it.write(filer)
+                    } catch (e: IOException) {
+                        messager.printMessage(Diagnostic.Kind.ERROR, e.message)
+                    }
+                }
         return true
     }
 }

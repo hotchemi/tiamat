@@ -1,5 +1,6 @@
 package tiamat;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import java.util.Collections;
@@ -15,7 +16,11 @@ public abstract class RxSharedPreferences {
     private final SharedPreferences preferences;
     private final Observable<String> keyChanges;
 
-    private RxSharedPreferences(SharedPreferences preferences) {
+    protected RxSharedPreferences(Context context, String name) {
+        this(context.getSharedPreferences(name, Context.MODE_PRIVATE));
+    }
+
+    protected RxSharedPreferences(SharedPreferences preferences) {
         this.preferences = preferences;
         this.keyChanges = Observable.create(new Observable.OnSubscribe<String>() {
             @Override

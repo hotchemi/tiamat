@@ -36,3 +36,9 @@ fun getClassName(type: TypeElement, packageName: String): String {
     val packageLen = packageName.length + 1
     return type.qualifiedName.toString().substring(packageLen).replace('.', '$')
 }
+
+// Exceptions
+
+class TableNameDuplicateException(tableName: String) : RuntimeException("table name $tableName is already defined")
+
+class TableNameNotDefinedException(className: String) : RuntimeException("$className should define table name")
