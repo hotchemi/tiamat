@@ -10,23 +10,7 @@ import rx.Subscriber;
 import rx.functions.Action0;
 import rx.subscriptions.Subscriptions;
 
-public final class RxSharedPreferences {
-
-    private static final Float DEFAULT_FLOAT = 0f;
-    private static final Integer DEFAULT_INTEGER = 0;
-    private static final Boolean DEFAULT_BOOLEAN = false;
-    private static final Long DEFAULT_LONG = 0L;
-
-    public static RxSharedPreferences create(SharedPreferences preferences) {
-        checkNotNull(preferences, "preferences == null");
-        return new RxSharedPreferences(preferences);
-    }
-
-    private static void checkNotNull(Object o, String message) {
-        if (o == null) {
-            throw new NullPointerException(message);
-        }
-    }
+public abstract class RxSharedPreferences {
 
     private final SharedPreferences preferences;
     private final Observable<String> keyChanges;
@@ -56,38 +40,34 @@ public final class RxSharedPreferences {
     }
 
     public Preference<Boolean> getBoolean(String key) {
-        return getBoolean(key, DEFAULT_BOOLEAN);
+        return getBoolean(key, false);
     }
 
     public Preference<Boolean> getBoolean(String key, Boolean defaultValue) {
-        checkNotNull(key, "key == null");
         return new Preference<>(preferences, key, defaultValue, BooleanAdapter.INSTANCE, keyChanges);
     }
 
     public Preference<Float> getFloat(String key) {
-        return getFloat(key, DEFAULT_FLOAT);
+        return getFloat(key, 0f);
     }
 
     public Preference<Float> getFloat(String key, Float defaultValue) {
-        checkNotNull(key, "key == null");
         return new Preference<>(preferences, key, defaultValue, FloatAdapter.INSTANCE, keyChanges);
     }
 
     public Preference<Integer> getInteger(String key) {
-        return getInteger(key, DEFAULT_INTEGER);
+        return getInteger(key, 0);
     }
 
     public Preference<Integer> getInteger(String key, Integer defaultValue) {
-        checkNotNull(key, "key == null");
         return new Preference<>(preferences, key, defaultValue, IntegerAdapter.INSTANCE, keyChanges);
     }
 
     public Preference<Long> getLong(String key) {
-        return getLong(key, DEFAULT_LONG);
+        return getLong(key, 0L);
     }
 
     public Preference<Long> getLong(String key, Long defaultValue) {
-        checkNotNull(key, "key == null");
         return new Preference<>(preferences, key, defaultValue, LongAdapter.INSTANCE, keyChanges);
     }
 
@@ -96,7 +76,6 @@ public final class RxSharedPreferences {
     }
 
     public Preference<String> getString(String key, String defaultValue) {
-        checkNotNull(key, "key == null");
         return new Preference<>(preferences, key, defaultValue, StringAdapter.INSTANCE, keyChanges);
     }
 
@@ -105,7 +84,6 @@ public final class RxSharedPreferences {
     }
 
     public Preference<Set<String>> getStringSet(String key, Set<String> defaultValue) {
-        checkNotNull(key, "key == null");
         return new Preference<>(preferences, key, defaultValue, StringSetAdapter.INSTANCE, keyChanges);
     }
 }

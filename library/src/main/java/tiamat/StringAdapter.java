@@ -7,8 +7,8 @@ final class StringAdapter implements Adapter<String> {
     static final StringAdapter INSTANCE = new StringAdapter();
 
     @Override
-    public String get(String key, SharedPreferences preferences) {
-        return preferences.getString(key, null);
+    public String get(String key, String defValue, SharedPreferences preferences) {
+        return preferences.getString(key, defValue);
     }
 
     @Override

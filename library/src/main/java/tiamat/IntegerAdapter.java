@@ -7,8 +7,8 @@ final class IntegerAdapter implements Adapter<Integer> {
     static final IntegerAdapter INSTANCE = new IntegerAdapter();
 
     @Override
-    public Integer get(String key, SharedPreferences preferences) {
-        return preferences.getInt(key, 0);
+    public Integer get(String key, Integer defValue, SharedPreferences preferences) {
+        return preferences.getInt(key, defValue);
     }
 
     @Override

@@ -7,8 +7,8 @@ final class FloatAdapter implements Adapter<Float> {
     static final FloatAdapter INSTANCE = new FloatAdapter();
 
     @Override
-    public Float get(String key, SharedPreferences preferences) {
-        return preferences.getFloat(key, 0f);
+    public Float get(String key, Float defValue, SharedPreferences preferences) {
+        return preferences.getFloat(key, defValue);
     }
 
     @Override

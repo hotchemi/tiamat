@@ -7,8 +7,8 @@ final class BooleanAdapter implements Adapter<Boolean> {
     static final BooleanAdapter INSTANCE = new BooleanAdapter();
 
     @Override
-    public Boolean get(String key, SharedPreferences preferences) {
-        return preferences.getBoolean(key, false);
+    public Boolean get(String key, Boolean defValue, SharedPreferences preferences) {
+        return preferences.getBoolean(key, defValue);
     }
 
     @Override

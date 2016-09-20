@@ -10,12 +10,14 @@ final class Preference<T> {
 
     private final SharedPreferences preferences;
     private final String key;
+    private final T defValue;
     private final Adapter<T> adapter;
     private final Observable<T> values;
 
-    Preference(SharedPreferences preferences, final String key, T defaultValue, Adapter<T> adapter, Observable<String> keyChanges) {
+    Preference(SharedPreferences preferences, final String key, T defValue, Adapter<T> adapter, Observable<String> keyChanges) {
         this.preferences = preferences;
         this.key = key;
+        this.defValue = defValue;
         this.adapter = adapter;
         this.values = keyChanges
                 .filter(new Func1<String, Boolean>() {
@@ -29,17 +31,13 @@ final class Preference<T> {
                 .map(new Func1<String, T>() {
                     @Override
                     public T call(String ignored) {
-                        return get();
+                        return asValue();
                     }
                 });
     }
 
     public String key() {
         return key;
-    }
-
-    public T get() {
-        return adapter.get(key, preferences);
     }
 
     public void set(T value) {
@@ -54,6 +52,10 @@ final class Preference<T> {
 
     public void delete() {
         set(null);
+    }
+
+    public T asValue() {
+        return adapter.get(key, defValue, preferences);
     }
 
     public Observable<T> asObservable() {

@@ -7,8 +7,8 @@ final class LongAdapter implements Adapter<Long> {
     static final LongAdapter INSTANCE = new LongAdapter();
 
     @Override
-    public Long get(String key, SharedPreferences preferences) {
-        return preferences.getLong(key, 0L);
+    public Long get(String key, Long defValue, SharedPreferences preferences) {
+        return preferences.getLong(key, defValue);
     }
 
     @Override
