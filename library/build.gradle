@@ -22,6 +22,7 @@ android {
 }
 
 dependencies {
+    compile project(":annotations")
     compile 'io.reactivex:rxjava:1.2.0'
     testCompile 'junit:junit:4.12'
 }

@@ -17,7 +17,7 @@ class PrefsModel(element: TypeElement, elementUtils: Elements) {
 
     init {
         val pref = element.getAnnotation(Pref::class.java)
-        this.tableName = pref.name
+        this.tableName = pref.value
         val packageName = getPackageName(elementUtils, element)
         this.originalClassName = getClassName(element, packageName)
         this.className = ClassName.get(packageName, originalClassName.replace("Schema", ""))
