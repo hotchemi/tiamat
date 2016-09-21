@@ -97,7 +97,7 @@ apply plugin: 'android-apt'
 
 dependencies {
   compile 'com.github.hotchemi:tiamat:${latest.version}'
-  apt 'com.github.hotchemi:permissionsdispatcher-processor:${latest.version}'
+  apt 'com.github.hotchemi:tiamat-compiler:${latest.version}'
 }
 ```
 
