@@ -6,7 +6,7 @@ Tiamat is an Android library generates **Reactive SharedPreferences** code.
 
 ### Motivation
 
-- `SharedPreferences` tends to be a mess during a long development history.
+- `SharedPreferences` tends to be a mess in a long development history.
   - We need a way to manage keys effectively like database definition in ORM.
 - `SharedPreferences` is just a data so that we wanna deal with them as `Observable` or `Action` of RxJava.
 
