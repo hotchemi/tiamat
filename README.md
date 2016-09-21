@@ -103,7 +103,7 @@ dependencies {
 
 ## Note
 
-I got the idea from [kvs-schema](https://github.com/rejasupotaro/kvs-schema), [rx-preferences](https://github.com/f2prateek/rx-preferences).
+I got the idea from [kvs-schema](https://github.com/rejasupotaro/kvs-schema) and [rx-preferences](https://github.com/f2prateek/rx-preferences).
 
 Really appreciate for two amazing libraries.
 
