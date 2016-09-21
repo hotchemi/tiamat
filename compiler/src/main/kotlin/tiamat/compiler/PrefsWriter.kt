@@ -45,9 +45,8 @@ class PrefsWriter(val model: PrefsModel) {
                 val argTypeOfSuperMethod = "boolean"
                 val defaultValue = if (field.value == null) "false" else field.value.toString()
                 val returnType = ClassName.get("java.lang", "Boolean")
-                methodSpecs.add(createGetterWithDefaultValue(field, argTypeOfSuperMethod, returnType))
                 methodSpecs.add(createGetter(field, argTypeOfSuperMethod, returnType, defaultValue))
-                methodSpecs.addAll(createSetter(field, argTypeOfSuperMethod))
+                methodSpecs.add(createSetter(field, argTypeOfSuperMethod))
                 methodSpecs.add(createHasMethod(field))
                 methodSpecs.add(createRemoveMethod(field))
             }
@@ -55,8 +54,7 @@ class PrefsWriter(val model: PrefsModel) {
                 val argTypeOfSuperMethod = "String"
                 val defaultValue = if (field.value == null) "" else field.value.toString()
                 val returnType = ClassName.get("java.lang", "String")
-                methodSpecs.addAll(createSetter(field, argTypeOfSuperMethod))
-                methodSpecs.add(createGetterWithDefaultValue(field, argTypeOfSuperMethod, returnType))
+                methodSpecs.add(createSetter(field, argTypeOfSuperMethod))
                 methodSpecs.add(createGetterForString(field, argTypeOfSuperMethod, returnType, defaultValue))
                 methodSpecs.add(createHasMethod(field))
                 methodSpecs.add(createRemoveMethod(field))
@@ -65,9 +63,8 @@ class PrefsWriter(val model: PrefsModel) {
                 val argTypeOfSuperMethod = "float"
                 val defaultValue = if (field.value == null) "0.0F" else field.value.toString() + "f"
                 val returnType = ClassName.get("java.lang", "Float")
-                methodSpecs.add(createGetterWithDefaultValue(field, argTypeOfSuperMethod, returnType))
                 methodSpecs.add(createGetter(field, argTypeOfSuperMethod, returnType, defaultValue))
-                methodSpecs.addAll(createSetter(field, argTypeOfSuperMethod))
+                methodSpecs.add(createSetter(field, argTypeOfSuperMethod))
                 methodSpecs.add(createHasMethod(field))
                 methodSpecs.add(createRemoveMethod(field))
             }
@@ -75,9 +72,8 @@ class PrefsWriter(val model: PrefsModel) {
                 val argTypeOfSuperMethod = "int"
                 val defaultValue = if (field.value == null) "0" else field.value.toString()
                 val returnType = ClassName.get("java.lang", "Integer")
-                methodSpecs.add(createGetterWithDefaultValue(field, argTypeOfSuperMethod, returnType))
                 methodSpecs.add(createGetter(field, argTypeOfSuperMethod, returnType, defaultValue))
-                methodSpecs.addAll(createSetter(field, argTypeOfSuperMethod))
+                methodSpecs.add(createSetter(field, argTypeOfSuperMethod))
                 methodSpecs.add(createHasMethod(field))
                 methodSpecs.add(createRemoveMethod(field))
             }
@@ -85,17 +81,15 @@ class PrefsWriter(val model: PrefsModel) {
                 val argTypeOfSuperMethod = "long"
                 val defaultValue = if (field.value == null) "0L" else field.value.toString() + "L"
                 val returnType = ClassName.get("java.lang", "Long")
-                methodSpecs.add(createGetterWithDefaultValue(field, argTypeOfSuperMethod, returnType))
                 methodSpecs.add(createGetter(field, argTypeOfSuperMethod, returnType, defaultValue))
-                methodSpecs.addAll(createSetter(field, argTypeOfSuperMethod))
+                methodSpecs.add(createSetter(field, argTypeOfSuperMethod))
                 methodSpecs.add(createHasMethod(field))
                 methodSpecs.add(createRemoveMethod(field))
             }
             ParameterizedTypeName.get(Set::class.java, String::class.java) -> {
                 val argTypeOfSuperMethod = "StringSet"
                 val returnType = ParameterizedTypeName.get(Set::class.java, String::class.java)
-                methodSpecs.add(createGetterWithDefaultValue(field, argTypeOfSuperMethod, returnType))
-                methodSpecs.addAll(createSetter(field, argTypeOfSuperMethod))
+                methodSpecs.add(createSetter(field, argTypeOfSuperMethod))
                 methodSpecs.add(createGetterForSet(field, argTypeOfSuperMethod, returnType))
                 methodSpecs.add(createHasMethod(field))
                 methodSpecs.add(createRemoveMethod(field))
@@ -105,18 +99,6 @@ class PrefsWriter(val model: PrefsModel) {
             }
         }
         return methodSpecs
-    }
-
-    private fun createGetterWithDefaultValue(field: Field, argTypeOfSuperMethod: String, returnType: TypeName): MethodSpec {
-        val methodName = "get${field.name.capitalize()}"
-        val superMethodName = "get${argTypeOfSuperMethod.capitalize()}"
-        val parameterName = "defValue"
-        return MethodSpec.methodBuilder(methodName)
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(field.fieldType, parameterName)
-                .returns(ParameterizedTypeName.get(ClassName.get("tiamat", "Preference"), returnType))
-                .addStatement("return \$N(\$S, \$N)", superMethodName, field.prefKeyName, parameterName)
-                .build()
     }
 
     private fun createGetter(field: Field, argTypeOfSuperMethod: String, returnType: ClassName, defaultValue: String) =
@@ -140,30 +122,13 @@ class PrefsWriter(val model: PrefsModel) {
                     .addStatement("return \$N(\$S, new \$T<String>())", "get${argTypeOfSuperMethod.capitalize()}", field.prefKeyName, ClassName.get(HashSet::class.java))
                     .build()
 
-    private fun createSetter(field: Field, argTypeOfSuperMethod: String): Collection<MethodSpec> {
-        val methodSpecs = ArrayList<MethodSpec>()
-        run {
-            val methodName = "set${field.name.capitalize()}"
-            val superMethodName = "put${argTypeOfSuperMethod.capitalize()}"
-            methodSpecs.add(MethodSpec.methodBuilder(methodName)
+    private fun createSetter(field: Field, argTypeOfSuperMethod: String) =
+            MethodSpec.methodBuilder("set${field.name.capitalize()}")
                     .addModifiers(Modifier.PUBLIC)
                     .returns(Void.TYPE)
                     .addParameter(field.fieldType, field.name)
-                    .addStatement("\$N(\$S, \$N)", superMethodName, field.prefKeyName, field.name)
-                    .build())
-        }
-        run {
-            val methodName = "put${field.name.capitalize()}"
-            val superMethodName = "put${argTypeOfSuperMethod.capitalize()}"
-            methodSpecs.add(MethodSpec.methodBuilder(methodName)
-                    .addModifiers(Modifier.PUBLIC)
-                    .returns(Void.TYPE)
-                    .addParameter(field.fieldType, field.name)
-                    .addStatement("\$N(\$S, \$N)", superMethodName, field.prefKeyName, field.name)
-                    .build())
-        }
-        return methodSpecs
-    }
+                    .addStatement("\$N(\$S, \$N)", "put${argTypeOfSuperMethod.capitalize()}", field.prefKeyName, field.name)
+                    .build()
 
     private fun createHasMethod(field: Field) =
             MethodSpec.methodBuilder("has${field.name.capitalize()}")
