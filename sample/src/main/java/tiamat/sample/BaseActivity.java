@@ -15,7 +15,7 @@ abstract class BaseActivity extends AppCompatActivity {
     private final CompositeSubscription subscriptions = new CompositeSubscription();
 
     @NonNull
-    public AppComponent getComponent() {
+    protected AppComponent getComponent() {
         App application = (App) getApplication();
         return application.getComponent();
     }
