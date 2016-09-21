@@ -1,6 +1,6 @@
 apply plugin: 'kotlin'
 
-// for legacy build
+// for legacy env
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
 
@@ -8,4 +8,7 @@ dependencies {
     compile project(":annotations")
     compile "org.jetbrains.kotlin:kotlin-stdlib:$KOTLIN_VERSION"
     compile 'com.squareup:javapoet:1.7.0'
+    testCompile 'junit:junit:4.12'
+    testCompile 'commons-io:commons-io:2.4'
+    testCompile 'com.google.testing.compile:compile-testing:0.6'
 }

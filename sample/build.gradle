@@ -1,16 +1,24 @@
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.1"
     defaultConfig {
         applicationId "tiamat.sample"
-        minSdkVersion 11
+        minSdkVersion 14
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    dataBinding {
+        enabled = true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     buildTypes {
         release {
@@ -21,9 +29,13 @@ android {
 }
 
 dependencies {
+    compile 'com.android.support:appcompat-v7:24.2.1'
     compile project(":library")
     provided project(":compiler")
-    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.google.dagger:dagger:2.6'
+    provided 'com.google.dagger:dagger-compiler:2.6'
+    compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
     testCompile 'junit:junit:4.12'
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'

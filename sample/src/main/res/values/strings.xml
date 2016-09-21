@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Tiamat</string>
+    <string name="app_name">Tiamat Sample</string>
+    <string name="main_checkbox">main_checkbox</string>
+    <string name="main_button">Next Activity</string>
 </resources>
