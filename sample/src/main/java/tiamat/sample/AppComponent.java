@@ -6,7 +6,7 @@ import dagger.Component;
 
 @Singleton
 @Component(modules = AppModule.class)
-public interface AppComponent {
+interface AppComponent {
     void inject(MainActivity activity);
 
     void inject(NextActivity activity);
