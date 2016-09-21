@@ -27,11 +27,9 @@ abstract class BaseActivity extends AppCompatActivity {
     }
 
     void bindPreference(CheckBox checkBox, Preference<Boolean> preference) {
-        // Bind the preference to the checkbox.
         subscriptions.add(preference.asObservable()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(RxCompoundButton.checked(checkBox)));
-        // Bind the checkbox to the preference.
         subscriptions.add(RxCompoundButton.checkedChanges(checkBox)
                 .skip(1)
                 .subscribe(preference.asAction()));
