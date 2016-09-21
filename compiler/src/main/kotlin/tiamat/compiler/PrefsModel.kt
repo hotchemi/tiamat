@@ -20,7 +20,7 @@ class PrefsModel(element: TypeElement, elementUtils: Elements) {
         this.tableName = pref.value
         val packageName = getPackageName(elementUtils, element)
         this.originalClassName = getClassName(element, packageName)
-        this.className = ClassName.get(packageName, originalClassName.replace("Schema", ""))
+        this.className = ClassName.get(packageName, "${originalClassName}SharedPreferences")
         findAnnotations(element)
     }
 

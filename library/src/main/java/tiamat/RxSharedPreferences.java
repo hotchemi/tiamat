@@ -3,7 +3,6 @@ package tiamat;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import java.util.Collections;
 import java.util.Set;
 
 import rx.Observable;
@@ -14,7 +13,7 @@ import rx.subscriptions.Subscriptions;
 public abstract class RxSharedPreferences {
 
     private final SharedPreferences preferences;
-    private final Observable<String> keyChanges;
+    private final Observable<String> changeEvents;
 
     protected RxSharedPreferences(Context context, String name) {
         this(context.getSharedPreferences(name, Context.MODE_PRIVATE));
@@ -22,7 +21,7 @@ public abstract class RxSharedPreferences {
 
     protected RxSharedPreferences(SharedPreferences preferences) {
         this.preferences = preferences;
-        this.keyChanges = Observable.create(new Observable.OnSubscribe<String>() {
+        this.changeEvents = Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(final Subscriber<? super String> subscriber) {
                 final SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -44,52 +43,28 @@ public abstract class RxSharedPreferences {
         }).share();
     }
 
-    protected Preference<Boolean> getBoolean(String key) {
-        return getBoolean(key, false);
+    protected Preference<Boolean> getBoolean(String key, boolean defValue) {
+        return new Preference<>(preferences, key, defValue, BooleanProxy.INSTANCE, changeEvents);
     }
 
-    protected Preference<Boolean> getBoolean(String key, Boolean defaultValue) {
-        return new Preference<>(preferences, key, defaultValue, BooleanProxy.INSTANCE, keyChanges);
+    protected Preference<Float> getFloat(String key, float defValue) {
+        return new Preference<>(preferences, key, defValue, FloatProxy.INSTANCE, changeEvents);
     }
 
-    protected Preference<Float> getFloat(String key) {
-        return getFloat(key, 0f);
+    protected Preference<Integer> getInt(String key, int defValue) {
+        return new Preference<>(preferences, key, defValue, IntegerProxy.INSTANCE, changeEvents);
     }
 
-    protected Preference<Float> getFloat(String key, Float defaultValue) {
-        return new Preference<>(preferences, key, defaultValue, FloatProxy.INSTANCE, keyChanges);
+    protected Preference<Long> getLong(String key, long defValue) {
+        return new Preference<>(preferences, key, defValue, LongProxy.INSTANCE, changeEvents);
     }
 
-    protected Preference<Integer> getInteger(String key) {
-        return getInteger(key, 0);
+    protected Preference<String> getString(String key, String defValue) {
+        return new Preference<>(preferences, key, defValue, StringProxy.INSTANCE, changeEvents);
     }
 
-    protected Preference<Integer> getInteger(String key, Integer defaultValue) {
-        return new Preference<>(preferences, key, defaultValue, IntegerProxy.INSTANCE, keyChanges);
-    }
-
-    protected Preference<Long> getLong(String key) {
-        return getLong(key, 0L);
-    }
-
-    protected Preference<Long> getLong(String key, Long defaultValue) {
-        return new Preference<>(preferences, key, defaultValue, LongProxy.INSTANCE, keyChanges);
-    }
-
-    protected Preference<String> getString(String key) {
-        return getString(key, null);
-    }
-
-    public Preference<String> getString(String key, String defaultValue) {
-        return new Preference<>(preferences, key, defaultValue, StringProxy.INSTANCE, keyChanges);
-    }
-
-    protected Preference<Set<String>> getStringSet(String key) {
-        return getStringSet(key, Collections.<String>emptySet());
-    }
-
-    protected Preference<Set<String>> getStringSet(String key, Set<String> defaultValue) {
-        return new Preference<>(preferences, key, defaultValue, StringSetProxy.INSTANCE, keyChanges);
+    protected Preference<Set<String>> getStringSet(String key, Set<String> defValue) {
+        return new Preference<>(preferences, key, defValue, StringSetProxy.INSTANCE, changeEvents);
     }
 
     protected void putBoolean(String key, boolean value) {

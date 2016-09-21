@@ -5,8 +5,8 @@ import java.util.Set;
 import tiamat.Key;
 import tiamat.Pref;
 
-@Pref("ExamplePrefs")
-public class ExamplePrefs {
+@Pref("Example")
+class Example {
     @Key(name = "user_id")
     long userId;
     @Key(name = "user_name")

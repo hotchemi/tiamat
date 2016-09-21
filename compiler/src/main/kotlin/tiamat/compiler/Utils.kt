@@ -28,14 +28,12 @@ fun validateSchemaModel(models: List<PrefsModel>) {
     }
 }
 
-fun getPackageName(elementUtils: Elements, type: TypeElement): String {
-    return elementUtils.getPackageOf(type).qualifiedName.toString()
-}
+fun getPackageName(elementUtils: Elements, type: TypeElement) =
+        elementUtils.getPackageOf(type).qualifiedName.toString()
 
-fun getClassName(type: TypeElement, packageName: String): String {
-    val packageLen = packageName.length + 1
-    return type.qualifiedName.toString().substring(packageLen).replace('.', '$')
-}
+
+fun getClassName(type: TypeElement, packageName: String) =
+        type.qualifiedName.toString().substring(packageName.length + 1).replace('.', '$')
 
 // Exceptions
 
