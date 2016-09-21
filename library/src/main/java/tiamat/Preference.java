@@ -26,7 +26,7 @@ public class Preference<T> {
                         return key.equals(changedKey);
                     }
                 })
-                .startWith("<init>") // Dummy value to trigger initial load.
+                .startWith("") // to trigger initial load
                 .onBackpressureLatest()
                 .map(new Func1<String, T>() {
                     @Override
