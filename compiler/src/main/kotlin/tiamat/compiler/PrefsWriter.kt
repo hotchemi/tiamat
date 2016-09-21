@@ -13,17 +13,16 @@ class PrefsWriter(val model: PrefsModel) {
         val classBuilder = TypeSpec.classBuilder(model.className.simpleName())
         classBuilder.addModifiers(Modifier.PUBLIC, Modifier.FINAL)
         classBuilder.superclass(ClassName.get("tiamat", "RxSharedPreferences"))
-        classBuilder.addFields(createFields())
+        classBuilder.addField(createField())
         classBuilder.addMethods(createConstructors())
         classBuilder.addMethods(model.keys.flatMap { createMethods(it) })
         JavaFile.builder(model.className.packageName(), classBuilder.build()).build().writeTo(filer)
     }
 
-    private fun createFields() =
-            Arrays.asList(FieldSpec
-                    .builder(String::class.java, "TABLE_NAME", Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+    private fun createField() =
+            FieldSpec.builder(String::class.java, "TABLE_NAME", Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
                     .initializer("\$S", model.tableName)
-                    .build())
+                    .build()
 
     private fun createConstructors() =
             Arrays.asList(
