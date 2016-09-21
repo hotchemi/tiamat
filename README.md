@@ -1,5 +1,7 @@
 # Tiamat
 
+[![Build Status](https://travis-ci.org/hotchemi/tiamat.svg?branch=master)](https://travis-ci.org/hotchemi/tiamat)
+
 Tiamat is an Android library that generates **Reactive SharedPreferences** code.
 
 ### Motivation
