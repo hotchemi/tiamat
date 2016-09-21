@@ -1,6 +1,5 @@
 package tiamat.compiler
 
-import com.squareup.javapoet.*
 import java.io.IOException
 import java.util.*
 import javax.annotation.processing.Filer
@@ -15,7 +14,7 @@ class PrefsWriter(val model: PrefsModel) {
         classBuilder.superclass(ClassName.get("tiamat", "RxSharedPreferences"))
         classBuilder.addFields(createFields())
         classBuilder.addMethods(createConstructors())
-        classBuilder.addMethods(createMethods())
+        classBuilder.addMethods(model.keys.flatMap { createMethods(it) })
         JavaFile.builder(model.className.packageName(), classBuilder.build()).build().writeTo(filer)
     }
 
@@ -37,8 +36,6 @@ class PrefsWriter(val model: PrefsModel) {
                             .addParameter(ClassName.get("android.content", "SharedPreferences"), "preferences")
                             .addStatement("super(preferences)")
                             .build())
-
-    private fun createMethods() = model.keys.flatMap { createMethods(it) }
 
     private fun createMethods(field: Field): List<MethodSpec> {
         val methodSpecs = ArrayList<MethodSpec>()

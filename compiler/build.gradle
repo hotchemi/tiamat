@@ -1,5 +1,9 @@
 apply plugin: 'kotlin'
 
+// for legacy build
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
+
 dependencies {
     compile project(":annotations")
     compile "org.jetbrains.kotlin:kotlin-stdlib:$KOTLIN_VERSION"
