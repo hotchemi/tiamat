@@ -13,7 +13,7 @@ class AppModule {
 
     private Context context;
 
-    public AppModule(Application app) {
+    AppModule(Application app) {
         context = app;
     }
 
@@ -25,7 +25,7 @@ class AppModule {
 
     @Provides
     @Singleton
-    public StatusSharedPreferences provideStatusPreferences(Context context) {
+    StatusSharedPreferences provideStatusPreferences(Context context) {
         return new StatusSharedPreferences(context);
     }
 }

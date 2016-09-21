@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Tiamat Sample</string>
     <string name="main_checkbox">main_checkbox</string>
+    <string name="next_checkbox">next_checkbox</string>
     <string name="main_button">Next Activity</string>
+    <string name="main_toggle_button">Toggle checkbox</string>
+    <string name="next_button">Finish Activity</string>
 </resources>

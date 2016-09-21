@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 
+import javax.inject.Inject;
+
 import tiamat.sample.databinding.ActivityNextBinding;
 
 public class NextActivity extends BaseActivity {
@@ -13,6 +15,7 @@ public class NextActivity extends BaseActivity {
         return new Intent(context, NextActivity.class);
     }
 
+    @Inject
     StatusSharedPreferences sharedPreferences;
 
     @Override
