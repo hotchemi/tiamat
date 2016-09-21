@@ -36,12 +36,6 @@ public class Preference<T> {
                 });
     }
 
-    public void set(T value) {
-        SharedPreferences.Editor editor = preferences.edit();
-        proxy.set(key, value, editor);
-        editor.apply();
-    }
-
     public T asValue() {
         return proxy.get(key, defValue, preferences);
     }
@@ -54,7 +48,9 @@ public class Preference<T> {
         return new Action1<T>() {
             @Override
             public void call(T value) {
-                set(value);
+                SharedPreferences.Editor editor = preferences.edit();
+                proxy.set(key, value, editor);
+                editor.apply();
             }
         };
     }

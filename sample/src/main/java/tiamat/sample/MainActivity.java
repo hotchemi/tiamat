@@ -9,6 +9,6 @@ public final class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ExampleSharedPreferences test;
+        ExampleSharedPreferences preferences = new ExampleSharedPreferences(getApplicationContext());
     }
 }

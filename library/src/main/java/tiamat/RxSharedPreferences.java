@@ -3,6 +3,7 @@ package tiamat;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.Map;
 import java.util.Set;
 
 import rx.Observable;
@@ -97,6 +98,10 @@ public abstract class RxSharedPreferences {
 
     protected void remove(String key) {
         preferences.edit().remove(key).apply();
+    }
+
+    public Map<String, ?> getAll() {
+        return preferences.getAll();
     }
 
     public void clear() {
