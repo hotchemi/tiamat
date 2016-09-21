@@ -19,11 +19,7 @@ public final class MainActivity extends BaseActivity {
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.mainButton.setOnClickListener(view -> startActivity(NextActivity.createIntent(getApplicationContext())));
         binding.mainToggleButton.setOnClickListener(view -> {
-            if (sharedPreferences.getChecked().asValue()) {
-                sharedPreferences.setChecked(false);
-            } else {
-                sharedPreferences.setChecked(true);
-            }
+            sharedPreferences.setChecked(!sharedPreferences.getChecked().asValue());
         });
         bindPreference(binding.mainCheckbox, sharedPreferences.getChecked());
     }

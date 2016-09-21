@@ -9,7 +9,7 @@ import tiamat.Pref;
 class Status {
     // stores checkbox state
     @Key(name = "checked")
-    boolean checked;
+    boolean checked = false;
 
     // supports the following types
     @Key(name = "long_value")
