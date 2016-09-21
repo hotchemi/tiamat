@@ -2,13 +2,13 @@
 
 [![Build Status](https://travis-ci.org/hotchemi/tiamat.svg?branch=master)](https://travis-ci.org/hotchemi/tiamat)
 
-Tiamat is an Android library that generates **Reactive SharedPreferences** code.
+Tiamat is an Android library generates **Reactive SharedPreferences** code.
 
 ### Motivation
 
 - `SharedPreferences` tends to be a mess during a long development history.
-  - We need a way to manage keys like POJO.
-- `SharedPreferences` is just a data so that we wanna deal with them as `Observable` or `Action`.
+  - We need a way to manage keys effectively like database definition in ORM.
+- `SharedPreferences` is just a data so that we wanna deal with them as `Observable` or `Action` of RxJava.
 
 ## Usage
 
@@ -54,7 +54,7 @@ preferences.removeStringValue();
 
 ## With Rx
 
-`getXXX` method returns `Preference` proxy object. If you want to use the value as a primitive type, just call `asValue`.
+`getXXX` method returns proxy object. If you want to use the value itself, just call `asValue()`.
 
 ```java
 boolean value = preferences.getBooleanValue().asValue();
@@ -66,15 +66,15 @@ You can use `asObservable()` method to get a RxJava Observable.
 Observable<Boolean> value = preferences.getBooleanValue().asObservable();
 ```
 
-You can use `asAction()` method to get a data as an Action.
+You can also use `asAction()` method to get an Action that update value.
 
 ```java
 Action1<? super Boolean> value = preferences.getBooleanValue().asAction();
 ```
 
-It means that you can monitor the change of SharedPreferences automatically and compound the action with other Rx Library.
+It means you can monitor the change of Preferences automatically and compound actions with other Rx library.
 
-Please check [sample](https://github.com/hotchemi/tiamat/tree/master/sample) module for more details.
+Please check [sample app](https://github.com/hotchemi/tiamat/tree/master/sample) for more details.
 
 ## Install
 
@@ -97,7 +97,7 @@ apply plugin: 'android-apt'
 
 dependencies {
   compile 'com.github.hotchemi:tiamat:${latest.version}'
-  apt 'com.github.hotchemi:tiamat-compiler:${latest.version}'
+  provided 'com.github.hotchemi:tiamat-compiler:${latest.version}'
 }
 ```
 
@@ -105,7 +105,7 @@ dependencies {
 
 I got the idea from [kvs-schema](https://github.com/rejasupotaro/kvs-schema), [rx-preferences](https://github.com/f2prateek/rx-preferences).
 
-Really appreciated for two amazing libraries.
+Really appreciate for two amazing libraries.
 
 ## Licence
 
