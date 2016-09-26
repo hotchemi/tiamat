@@ -1,5 +1,10 @@
 language: android
 
+env:
+  global:
+    - secure: "u1NF25tJ/JReozk4nrH7zdQRSgHC0MaeJL1oe5TGMlFFWBElDF0kY0tF6iPurbkFtTxbdoFNDJrqNrH1T/whTkUCdM2L99O9AJAK1gXNXO9JDNzUeij2hkaaz3zGgTKKOtRyj61JJBczt96wqr3qQXHUQ0Fh+ftgkCwvQSCXrC8hZVU8/i3yyzQ2CtL445uoWCs2uYVVfNGssCSHLXBoMn9J/BmeZjQjeNcIjpRQjI5t8QAaw4sxjdmuVGzeFvOrKVnStXR78rsQ87tYXCWQK76eTvmINHrvd0VP6QCzeWyEm3wU+hyIN28eDH/oi/XlwdEbG6cUpEWt0nSg0CQlmzSnNIZvlGbZ7WOPJChHkpX4RT1L4i2BgnbVsD4nuaFEvmdEkmqpoGzrYPFaKJKo3i9YmxNBZ3Dh1NdTW+jsKaxLF/cnYbjrFtTZDl+3nHCqnF9ZZR+WVQ0LPIYm1RQCHowSH32tn3F5agfyTcHKgNBYiTrtJV079mKJSXEYBtlJqjOr2J8pdeVl05LJ6f8E0u8dMf2RJyejHpQobAVFcS8THUm8nLzPa3EKV++HoodfmGffYSgqadPVRfSizvTj8VKQiXThXL7WNhNHzRE1klvhnY0I0vwvMlc2FzBtQAJ9xIODNs86eaISiVWP62mnCzZNbGDvyCerCT1n1zFOCR8="
+    - secure: "R99aEpiVFsh/ROA4TEw1rU/mbFXnMtCcSoe+HGkaL4c/j8UXH1zjqLwVHGPw2NbapeomSF0ikqLYxaQoWImeYlE5VEJQQaz69zoS6bmOpYF9AfUJ98c2ggFeSka+3VX2dYfMiKQzQKGqqJavX/b+WXUqy/KriWQyAFfUlvw3rjQweQH9ZdLtckct24mhKY0WvQFnw/wd6lDy3T2Kz6NwZSHhwLAGviOQFy8pH2IYWeFoPFSgvB47VBH2Y//iQsNnlGTOMub55424vyaYqG9eP2wSyN9Pyw2fbK7JaD/9VtPbnY4P/f3M71OQOb2IvAB6Q2ZySOowtdKf3vweqng7q/tFi7Ff25reTKGC0ou3JJP3LgWCKrqHhsqFk07lYLCAGvBTp3dwgrvNpmYTdX6EegEAjMqrZTdagvv4z2mzW3ZtpUxNz+6BJUh8Z2W0kcAkfYnmFAjphDX+DuXEj8bLjsstu6liw+rZ20cx5SDNJWWOD+YQxXiCLBOYxNhI3T5Qr8GwwtgKngoVzVtcTnBEVBVg6JgmE8ziHdWr9IwIVbjpESiT0R/WIOHBfqDaOQc615WlXF6WuwLXTMaG+4Md3WwmXWUw9HiLdJot1zUrEibSQnKP0tvGHM5zFSWvyqJGj9mA4rvS3jC6txM6vMaCfVBfwBpKS0EZ2VVVWXiTbFw="
+
 android:
   components:
     - tools
@@ -19,3 +24,10 @@ branches:
     - gh-pages
 
 script: ./gradlew check --stacktrace
+
+deploy:
+  provider: script
+  script: ./release.sh
+  on:
+    tags: true
+    repo: hotchemi/tiamat
