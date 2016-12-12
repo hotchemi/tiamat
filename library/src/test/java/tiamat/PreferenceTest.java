@@ -10,9 +10,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-import rx.Subscription;
-import rx.functions.Action1;
-import rx.observers.TestSubscriber;
+import io.reactivex.functions.Consumer;
+import io.reactivex.observers.TestObserver;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 import static java.util.Collections.singleton;
@@ -167,56 +166,32 @@ public class PreferenceTest {
     public void asObservable() {
         Preference<String> preference = rxPreferences.getString("key1", "defValue");
 
-        TestSubscriber<String> o = new TestSubscriber<>();
-        Subscription subscription = preference.asObservable().subscribe(o);
-        o.assertValues("defValue");
+        TestObserver<String> o1 = preference.asObservable().test();
+        o1.assertValues("defValue");
 
         rxPreferences.putString("key1", "value1");
-        o.assertValues("defValue", "value1");
+        TestObserver<String> o2 = preference.asObservable().test();
+        o2.assertValues("value1");
 
         rxPreferences.remove("key1");
-        o.assertValues("defValue", "value1", "defValue");
+        TestObserver<String> o3 = preference.asObservable().test();
+        o3.assertValues("defValue");
 
-        subscription.unsubscribe();
         rxPreferences.putString("key1", "foo");
-        o.assertValues("defValue", "value1", "defValue");
+        TestObserver<String> o4 = preference.asObservable().test();
+        o4.assertValues("foo");
     }
 
-    @Test
-    public void asObservableHonorsBackpressure() {
-        Preference<String> preference = rxPreferences.getString("key1", "defValue");
-
-        TestSubscriber<String> o = new TestSubscriber<>(2);
-        preference.asObservable().subscribe(o);
-        o.assertValues("defValue");
-
-        rxPreferences.putString("key1", "value1");
-        o.assertValues("defValue", "value1");
-
-        rxPreferences.putString("key1", "value2");
-        o.assertValues("defValue", "value1"); // No new item due to backpressure.
-
-        o.requestMore(1);
-        o.assertValues("defValue", "value1", "value2");
-
-        for (int i = 0; i < 1000; i++) {
-            rxPreferences.putString("key1", "value" + i);
-        }
-        o.assertValues("defValue", "value1", "value2"); // No new items due to backpressure.
-
-        o.requestMore(Long.MAX_VALUE);
-        o.assertValues("defValue", "value1", "value2", "value999"); // only latest.
-    }
 
     @Test
-    public void asAction() {
+    public void asConsumer() throws Exception {
         Preference<String> preference = rxPreferences.getString("key1", "defValue");
-        Action1<? super String> action = preference.asAction();
+        Consumer<? super String> consumer = preference.asConsumer();
 
-        action.call("value1");
+        consumer.accept("value1");
         assertThat(preferences.getString("key1", null)).isEqualTo("value1");
 
-        action.call("value2");
+        consumer.accept("value2");
         assertThat(preferences.getString("key1", null)).isEqualTo("value2");
     }
 
