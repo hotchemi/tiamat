@@ -6,10 +6,11 @@ import android.content.SharedPreferences;
 import java.util.Map;
 import java.util.Set;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.functions.Action0;
-import rx.subscriptions.Subscriptions;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.functions.Cancellable;
+
 
 public abstract class RxSharedPreferences {
 
@@ -22,24 +23,24 @@ public abstract class RxSharedPreferences {
 
     protected RxSharedPreferences(SharedPreferences preferences) {
         this.preferences = preferences;
-        this.changeEvents = Observable.create(new Observable.OnSubscribe<String>() {
+        this.changeEvents = Observable.create(new ObservableOnSubscribe<String>() {
             @Override
-            public void call(final Subscriber<? super String> subscriber) {
+            public void subscribe(final ObservableEmitter<String> observableEmitter) throws Exception {
                 final SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
                     @Override
                     public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
-                        subscriber.onNext(key);
+                        observableEmitter.onNext(key);
                     }
                 };
 
                 RxSharedPreferences.this.preferences.registerOnSharedPreferenceChangeListener(listener);
 
-                subscriber.add(Subscriptions.create(new Action0() {
+                observableEmitter.setCancellable(new Cancellable() {
                     @Override
-                    public void call() {
+                    public void cancel() throws Exception {
                         RxSharedPreferences.this.preferences.unregisterOnSharedPreferenceChangeListener(listener);
                     }
-                }));
+                });
             }
         }).share();
     }
