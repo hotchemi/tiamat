@@ -6,13 +6,14 @@ import android.widget.CheckBox;
 
 import com.jakewharton.rxbinding.widget.RxCompoundButton;
 
-import rx.android.schedulers.AndroidSchedulers;
-import rx.subscriptions.CompositeSubscription;
+import hu.akarnokd.rxjava.interop.RxJavaInterop;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import tiamat.Preference;
 
 abstract class BaseActivity extends AppCompatActivity {
 
-    private final CompositeSubscription subscriptions = new CompositeSubscription();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @NonNull
     protected AppComponent getComponent() {
@@ -23,15 +24,15 @@ abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        subscriptions.unsubscribe();
+        compositeDisposable.dispose();;
     }
 
     void bindPreference(CheckBox checkBox, Preference<Boolean> preference) {
-        subscriptions.add(preference.asObservable()
+        compositeDisposable.add(preference.asObservable()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(RxCompoundButton.checked(checkBox)));
-        subscriptions.add(RxCompoundButton.checkedChanges(checkBox)
+                .subscribe(checkBox::setChecked));
+        compositeDisposable.add(RxJavaInterop.toV2Observable(RxCompoundButton.checkedChanges(checkBox))
                 .skip(1)
-                .subscribe(preference.asAction()));
+                .subscribe(preference.asConsumer()));
     }
 }
