@@ -6,16 +6,17 @@ import android.content.SharedPreferences;
 import java.util.Map;
 import java.util.Set;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
+import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.functions.Cancellable;
 
 
 public abstract class RxSharedPreferences {
 
     private final SharedPreferences preferences;
-    private final Observable<String> changeEvents;
+    private final Flowable<String> changeEvents;
 
     protected RxSharedPreferences(Context context, String name) {
         this(context.getSharedPreferences(name, Context.MODE_PRIVATE));
@@ -23,26 +24,26 @@ public abstract class RxSharedPreferences {
 
     protected RxSharedPreferences(SharedPreferences preferences) {
         this.preferences = preferences;
-        this.changeEvents = Observable.create(new ObservableOnSubscribe<String>() {
+        this.changeEvents = Flowable.create(new FlowableOnSubscribe<String>() {
             @Override
-            public void subscribe(final ObservableEmitter<String> observableEmitter) throws Exception {
+            public void subscribe(final FlowableEmitter<String> flowableEmitter) throws Exception {
                 final SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
                     @Override
-                    public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
-                        observableEmitter.onNext(key);
+                    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                        flowableEmitter.onNext(key);
                     }
                 };
 
                 RxSharedPreferences.this.preferences.registerOnSharedPreferenceChangeListener(listener);
 
-                observableEmitter.setCancellable(new Cancellable() {
+                flowableEmitter.setCancellable(new Cancellable() {
                     @Override
                     public void cancel() throws Exception {
                         RxSharedPreferences.this.preferences.unregisterOnSharedPreferenceChangeListener(listener);
                     }
                 });
             }
-        }).share();
+        }, BackpressureStrategy.LATEST).share();
     }
 
     protected Preference<Boolean> getBoolean(String key, boolean defValue) {

@@ -2,6 +2,7 @@ package tiamat;
 
 import android.content.SharedPreferences;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
@@ -14,9 +15,9 @@ public class Preference<T> {
     private final String key;
     private final T defValue;
     private final Proxy<T> proxy;
-    private final Observable<T> values;
+    private final Flowable<T> values;
 
-    Preference(SharedPreferences preferences, final String key, T defValue, Proxy<T> proxy, final Observable<String> keyChanges) {
+    Preference(SharedPreferences preferences, final String key, T defValue, Proxy<T> proxy, final Flowable<String> keyChanges) {
         this.preferences = preferences;
         this.key = key;
         this.defValue = defValue;
@@ -41,8 +42,12 @@ public class Preference<T> {
         return proxy.get(key, defValue, preferences);
     }
 
-    public Observable<T> asObservable() {
+    public Flowable<T> asFlowable() {
         return values;
+    }
+
+    public Observable<T> asObservable() {
+        return values.toObservable();
     }
 
     public Consumer<? super T> asConsumer(){

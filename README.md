@@ -60,7 +60,13 @@ preferences.removeStringValue();
 boolean value = preferences.getBooleanValue().asValue();
 ```
 
-You can use `asObservable()` method to get a RxJava Observable.
+You can use `asFlowable()` method to get a RxJava Flowable.
+
+```java
+Flowable<Boolean> value = preferences.getBooleanValue().asFlowable();
+```
+
+Alternatively, `asObservable()` method is available as a choice of switch over.
 
 ```java
 Observable<Boolean> value = preferences.getBooleanValue().asObservable();

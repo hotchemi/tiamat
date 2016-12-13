@@ -28,7 +28,7 @@ abstract class BaseActivity extends AppCompatActivity {
     }
 
     void bindPreference(CheckBox checkBox, Preference<Boolean> preference) {
-        compositeDisposable.add(preference.asObservable()
+        compositeDisposable.add(preference.asFlowable()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(checkBox::setChecked));
         compositeDisposable.add(RxJavaInterop.toV2Observable(RxCompoundButton.checkedChanges(checkBox))

@@ -12,6 +12,7 @@ import org.robolectric.RuntimeEnvironment;
 
 import io.reactivex.functions.Consumer;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 import static java.util.Collections.singleton;
@@ -182,6 +183,28 @@ public class PreferenceTest {
         o4.assertValues("foo");
     }
 
+    @Test
+    public void asFlowable() {
+        Preference<String> preference = rxPreferences.getString("key1", "defValue");
+
+        // Flowable can be tested with TestSubscriber
+        // https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0#testing
+        TestSubscriber<String> s1 = preference.asFlowable().test();
+        s1.assertValue("defValue");
+
+        rxPreferences.putString("key1", "value1");
+        TestSubscriber<String> s2 = preference.asFlowable().test();
+        s2.assertValues("value1");
+
+        rxPreferences.remove("key1");
+        TestSubscriber<String> s3 = preference.asFlowable().test();
+        s3.assertValues("defValue");
+
+        rxPreferences.putString("key1", "foo");
+        TestSubscriber<String> s4 = preference.asFlowable().test();
+        s4.assertValues("foo");
+
+    }
 
     @Test
     public void asConsumer() throws Exception {
