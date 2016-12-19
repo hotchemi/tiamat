@@ -7,7 +7,6 @@ import android.os.Bundle;
 
 import javax.inject.Inject;
 
-import io.reactivex.functions.Consumer;
 import tiamat.sample.databinding.ActivityNextBinding;
 
 public class NextActivity extends BaseActivity {
@@ -26,6 +25,5 @@ public class NextActivity extends BaseActivity {
         binding.nextButton.setOnClickListener(view -> finish());
         getComponent().inject(this);
         bindPreference(binding.nextCheckbox, sharedPreferences.getChecked());
-        Consumer<? super Boolean> value = sharedPreferences.getBooleanValue().asConsumer();
     }
 }
