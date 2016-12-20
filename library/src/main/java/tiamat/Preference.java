@@ -2,9 +2,12 @@ package tiamat;
 
 import android.content.SharedPreferences;
 
-import rx.Observable;
-import rx.functions.Action1;
-import rx.functions.Func1;
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
+
 
 public class Preference<T> {
 
@@ -12,25 +15,24 @@ public class Preference<T> {
     private final String key;
     private final T defValue;
     private final Proxy<T> proxy;
-    private final Observable<T> values;
+    private final Flowable<T> values;
 
-    Preference(SharedPreferences preferences, final String key, T defValue, Proxy<T> proxy, Observable<String> keyChanges) {
+    Preference(SharedPreferences preferences, final String key, T defValue, Proxy<T> proxy, final Flowable<String> keyChanges) {
         this.preferences = preferences;
         this.key = key;
         this.defValue = defValue;
         this.proxy = proxy;
         this.values = keyChanges
-                .filter(new Func1<String, Boolean>() {
+                .filter(new Predicate<String>() {
                     @Override
-                    public Boolean call(String changedKey) {
-                        return key.equals(changedKey);
+                    public boolean test(String s) throws Exception {
+                        return key.equals(keyChanges);
                     }
                 })
                 .startWith("") // to trigger initial load
-                .onBackpressureLatest()
-                .map(new Func1<String, T>() {
+                .map(new Function<String, T>() {
                     @Override
-                    public T call(String ignored) {
+                    public T apply(String s) throws Exception {
                         return asValue();
                     }
                 });
@@ -40,14 +42,18 @@ public class Preference<T> {
         return proxy.get(key, defValue, preferences);
     }
 
-    public Observable<T> asObservable() {
+    public Flowable<T> asFlowable() {
         return values;
     }
 
-    public Action1<? super T> asAction() {
-        return new Action1<T>() {
+    public Observable<T> asObservable() {
+        return values.toObservable();
+    }
+
+    public Consumer<? super T> asConsumer(){
+        return new Consumer<T>(){
             @Override
-            public void call(T value) {
+            public void accept(T value) throws Exception {
                 SharedPreferences.Editor editor = preferences.edit();
                 proxy.set(key, value, editor);
                 editor.apply();
