@@ -175,8 +175,7 @@ public class PreferenceTest {
 
         rxPreferences.putString("key1", "foo");
 
-        o.onComplete();
-        o.assertResult("defValue", "value1", "defValue", "foo");
+        o.assertValues("defValue", "value1", "defValue", "foo");
     }
 
     @Test
@@ -193,8 +192,7 @@ public class PreferenceTest {
 
         rxPreferences.putString("key1", "foo");
 
-        s.onComplete();
-        s.assertResult("defValue", "value1", "defValue", "foo");
+        s.assertValues("defValue", "value1", "defValue", "foo");
 
     }
 
