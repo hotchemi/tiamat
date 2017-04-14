@@ -18,8 +18,8 @@ publish {
     userOrg = USER
     groupId = GROUP_ID
     artifactId = ARTIFACT_ID_COMPILER
-    version = VERSION
-    description = DESCRIPTION
+    publishVersion = VERSION
+    desc = DESCRIPTION
     website = WEBSITE
     licences = LICENCES
 }
