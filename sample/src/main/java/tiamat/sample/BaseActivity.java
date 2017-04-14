@@ -4,9 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.CheckBox;
 
-import com.jakewharton.rxbinding.widget.RxCompoundButton;
-
-import hu.akarnokd.rxjava.interop.RxJavaInterop;
+import com.jakewharton.rxbinding2.widget.RxCompoundButton;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import tiamat.Preference;
@@ -31,7 +29,7 @@ abstract class BaseActivity extends AppCompatActivity {
         compositeDisposable.add(preference.asFlowable()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(checkBox::setChecked));
-        compositeDisposable.add(RxJavaInterop.toV2Observable(RxCompoundButton.checkedChanges(checkBox))
+        compositeDisposable.add(RxCompoundButton.checkedChanges(checkBox)
                 .skip(1)
                 .subscribe(preference.asConsumer()));
     }
