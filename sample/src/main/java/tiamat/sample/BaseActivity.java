@@ -24,7 +24,7 @@ abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        compositeDisposable.dispose();;
+        compositeDisposable.dispose();
     }
 
     void bindPreference(CheckBox checkBox, Preference<Boolean> preference) {

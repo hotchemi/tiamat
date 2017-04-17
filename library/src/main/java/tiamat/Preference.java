@@ -26,7 +26,7 @@ public class Preference<T> {
                 .filter(new Predicate<String>() {
                     @Override
                     public boolean test(String s) throws Exception {
-                        return key.equals(keyChanges);
+                        return key.equals(s);
                     }
                 })
                 .startWith("") // to trigger initial load

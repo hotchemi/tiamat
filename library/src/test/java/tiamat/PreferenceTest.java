@@ -167,20 +167,15 @@ public class PreferenceTest {
     public void asObservable() {
         Preference<String> preference = rxPreferences.getString("key1", "defValue");
 
-        TestObserver<String> o1 = preference.asObservable().test();
-        o1.assertValues("defValue");
+        TestObserver<String> o = preference.asObservable().test();
 
         rxPreferences.putString("key1", "value1");
-        TestObserver<String> o2 = preference.asObservable().test();
-        o2.assertValues("value1");
 
         rxPreferences.remove("key1");
-        TestObserver<String> o3 = preference.asObservable().test();
-        o3.assertValues("defValue");
 
         rxPreferences.putString("key1", "foo");
-        TestObserver<String> o4 = preference.asObservable().test();
-        o4.assertValues("foo");
+
+        o.assertValues("defValue", "value1", "defValue", "foo");
     }
 
     @Test
@@ -189,20 +184,15 @@ public class PreferenceTest {
 
         // Flowable can be tested with TestSubscriber
         // https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0#testing
-        TestSubscriber<String> s1 = preference.asFlowable().test();
-        s1.assertValue("defValue");
+        TestSubscriber<String> s = preference.asFlowable().test();
 
         rxPreferences.putString("key1", "value1");
-        TestSubscriber<String> s2 = preference.asFlowable().test();
-        s2.assertValues("value1");
 
         rxPreferences.remove("key1");
-        TestSubscriber<String> s3 = preference.asFlowable().test();
-        s3.assertValues("defValue");
 
         rxPreferences.putString("key1", "foo");
-        TestSubscriber<String> s4 = preference.asFlowable().test();
-        s4.assertValues("foo");
+
+        s.assertValues("defValue", "value1", "defValue", "foo");
 
     }
 
