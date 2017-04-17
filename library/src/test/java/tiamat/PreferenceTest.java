@@ -16,7 +16,8 @@ import io.reactivex.subscribers.TestSubscriber;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 import static java.util.Collections.singleton;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
 
 @RunWith(RobolectricTestRunner.class)
 @SuppressLint({"NewApi", "CommitPrefEdits"})
