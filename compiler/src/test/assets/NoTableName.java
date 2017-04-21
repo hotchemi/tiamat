@@ -7,4 +7,6 @@ import tiamat.Pref;
 public class NoTableName {
     @Key(name = "user_id")
     long userId;
+    @Key
+    String userName;
 }
