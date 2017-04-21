@@ -1,5 +1,6 @@
 package tiamat.compiler
 
+import com.google.common.base.CaseFormat
 import tiamat.Pref
 import java.util.*
 import javax.annotation.processing.RoundEnvironment
@@ -34,6 +35,10 @@ fun getPackageName(elementUtils: Elements, type: TypeElement) =
 
 fun getClassName(type: TypeElement, packageName: String) =
         type.qualifiedName.toString().substring(packageName.length + 1).replace('.', '$')
+
+fun upperCamelToLowerSnake(name: String): String = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name)
+
+fun lowerCamelToLowerSnake(name: String): String = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name)
 
 // Exceptions
 

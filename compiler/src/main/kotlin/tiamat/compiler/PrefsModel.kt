@@ -1,5 +1,6 @@
 package tiamat.compiler
 
+import com.google.common.base.CaseFormat
 import com.squareup.javapoet.ClassName
 import tiamat.Key
 import tiamat.Pref
@@ -17,10 +18,11 @@ class PrefsModel(element: TypeElement, elementUtils: Elements) {
 
     init {
         val pref = element.getAnnotation(Pref::class.java)
-        this.tableName = pref.value
+
         val packageName = getPackageName(elementUtils, element)
         this.originalClassName = getClassName(element, packageName)
         this.className = ClassName.get(packageName, "${originalClassName}SharedPreferences")
+        this.tableName = if (pref.value.isNotBlank()) pref.value else upperCamelToLowerSnake(originalClassName)
         findAnnotations(element)
     }
 
