@@ -12,9 +12,6 @@ import static tiamat.compiler.test.AssetsUtils.readString;
 
 import javax.tools.JavaFileObject;
 
-/**
- * Created by yshrsmz on 17/05/25.
- */
 public class PrefsProcessorTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
