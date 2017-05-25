@@ -22,10 +22,11 @@ Currently tiamat supports `boolean`, `String`, `float`, `int`, `long` and `Set<S
 @Pref("sample")
 class Sample {
     @Key(name = "long_value")
-    long longValue = false;
-    // you can define default value like stringValue
+    final long longValue = false;
+    // you can define default value like stringValue.
+    // please note, to define default value the field must be marked as final.
     @Key(name = "string_value")
-    String stringValue = "default_value";
+    final String stringValue = "default_value";
     @Key(name = "boolean_value")
     boolean booleanValue;
     @Key(name = "int_value")
@@ -34,6 +35,19 @@ class Sample {
     float floatValue;
     @Key(name = "set_string")
     Set<String> setStringValue;
+}
+```
+
+Pref name & Key name can be unset, in this case tiamat will automatically generate these for you.
+These auto-generated names will be lower snake case of actual class/field name.
+
+```java
+// Preference name will be "no_name"
+@Pref
+class NoName {
+    // key name will be "long_value"
+    @Key
+    long longValue;
 }
 ```
 
