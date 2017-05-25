@@ -1,9 +1,7 @@
 package tiamat.compiler
 
-import com.google.common.base.CaseFormat
 import com.squareup.javapoet.TypeName
 import tiamat.Key
-
 import javax.lang.model.element.Element
 import javax.lang.model.element.VariableElement
 

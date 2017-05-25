@@ -5,12 +5,12 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import tiamat.compiler.PrefsProcessor;
 
+import javax.tools.JavaFileObject;
+
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaFileObjects.forSourceString;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 import static tiamat.compiler.test.AssetsUtils.readString;
-
-import javax.tools.JavaFileObject;
 
 public class PrefsProcessorTest {
     @Rule

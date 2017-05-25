@@ -1,6 +1,5 @@
 package tiamat.compiler
 
-import com.google.common.base.CaseFormat
 import com.squareup.javapoet.ClassName
 import tiamat.Key
 import tiamat.Pref
