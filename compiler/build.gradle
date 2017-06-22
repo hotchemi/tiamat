@@ -9,9 +9,9 @@ dependencies {
     compile project(":annotations")
     compile "org.jetbrains.kotlin:kotlin-stdlib:$KOTLIN_VERSION"
     compile 'com.squareup:javapoet:1.8.0'
-    testCompile 'junit:junit:4.12'
-    testCompile 'commons-io:commons-io:2.5'
-    testCompile 'com.google.testing.compile:compile-testing:0.10'
+    compile 'com.google.guava:guava:21.0'
+
+    // test for compiler module has its own module, "compiler-test"
 }
 
 publish {
